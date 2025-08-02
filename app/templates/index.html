@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Stock Insight AI</title>
+</head>
+<body>
+    <h1>Enter Stock Ticker</h1>
+    <form method="post">
+        <input type="text" name="ticker" placeholder="e.g. TSLA" required />
+        <button type="submit">Get Insights</button>
+    </form>
+
+    {% if result %}
+    <h2>📈 {{ result.stock.shortName }} ({{ result.stock.symbol }})</h2>
+    <p><strong>Market Cap:</strong> {{ result.stock.marketCap }}</p>
+    <p><strong>Recommendation:</strong> {{ result.stock.recommendationKey }}</p>
+
+    <h3>📰 News</h3>
+    <ul>
+        {% for article in result.news %}
+            <li><a href="{{ article.link }}">{{ article.title }}</a></li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+</body>
+</html>
