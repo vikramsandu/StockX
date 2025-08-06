@@ -26,3 +26,4 @@ Thumbs.db
 
 # dotenv files
 .env
+configs/api_keys.json
