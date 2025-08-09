@@ -18,16 +18,14 @@ from fastapi.responses import HTMLResponse
 from agents.agent_1 import extract_company_info
 from agents.agent_2 import get_stock_info
 from agents.agent_3 import get_financial_news
+from agents.agent_4 import investment_decision_agent
+
 import json
 
-# Create a FastAPI app
 app = FastAPI(title="Stock Expert")
-
-# Helper for rendering HTML template.
-templates = Jinja2Templates(directory="app/templates")
+templates = Jinja2Templates(directory="app/templates")  # adjust if needed
 
 
-# Homepage
 @app.get("/", response_class=HTMLResponse)
 def form_get(request: Request):
     return templates.TemplateResponse("index.html", {"request": request, "result": None})
@@ -42,38 +40,37 @@ async def form_post(request: Request, ticker: str = Form(...)):
         with open("configs/prompts.json", "r") as f:
             prompts = json.load(f)
 
-        # Call the agent-1: Extract Company Info and
-        # Ticker Symbol (short abbreviation used to uniquely
-        # identify the company's stock on the stock exchange.)
+        # Agent-1: Extract company name + ticker symbol
         company_info = extract_company_info(
             ticker,
             prompts['Prompt_Agent_1'],
             api_keys['groq']
         )
 
-        if company_info is None:
+        if not company_info:
             result = {"error": "Agent failed to extract company info."}
         else:
             company, ticker_symbol = company_info
 
-            # Call Agent-2: Get Stock Info using YFinance.
+            # Agent-2: Stock info
             stock_info = get_stock_info(ticker_symbol)
 
-            # Call Agent-3: Get News about Company.
+            # Agent-3: News
             news = get_financial_news(company, api_keys['news'])
 
-            result = {
-                "stock": {
-                    "shortName": company,
-                    "symbol": ticker_symbol,
-                    "marketCap": "900B",
-                    "recommendationKey": "buy"
-                },
-                "news": [
-                    {"title": f"{company} hits new highs", "link": "https://example.com/news1"},
-                    {"title": f"Analysts recommend buying {ticker_symbol}", "link": "https://example.com/news2"}
-                ]
-            }
+            # Agent-4: Investment decision
+            raw_result = investment_decision_agent(
+                stock_info,
+                news,
+                prompts['Prompt_Agent_4'],
+                api_keys['groq']
+            )
+
+            # Parse LLM output
+            try:
+                result = json.loads(raw_result)
+            except json.JSONDecodeError:
+                result = {"error": "Invalid response format from AI agent."}
 
     except Exception as e:
         result = {"error": f"Something went wrong: {str(e)}"}

@@ -1,26 +1,69 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Stock Insight AI</title>
+    <meta charset="UTF-8">
+    <title>Stock Expert</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+        }
+        .result {
+            background: #f4f4f4;
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 6px;
+        }
+        .error {
+            color: red;
+            font-weight: bold;
+        }
+        label, input, textarea {
+            display: block;
+            width: 100%;
+            margin-top: 10px;
+        }
+        button {
+            margin-top: 15px;
+            padding: 10px;
+            width: 100%;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
 </head>
 <body>
-    <h1>Enter Stock Ticker</h1>
+<div class="container">
+    <h1>Stock Expert</h1>
     <form method="post">
-        <input type="text" name="ticker" placeholder="e.g. TSLA" required />
-        <button type="submit">Get Insights</button>
+        <label for="ticker">Enter your investment question or stock ticker:</label>
+        <textarea id="ticker" name="ticker" rows="3" placeholder="e.g., Should I invest in Apple?" required></textarea>
+        <button type="submit">Analyze</button>
     </form>
 
     {% if result %}
-    <h2>📈 {{ result.stock.shortName }} ({{ result.stock.symbol }})</h2>
-    <p><strong>Market Cap:</strong> {{ result.stock.marketCap }}</p>
-    <p><strong>Recommendation:</strong> {{ result.stock.recommendationKey }}</p>
-
-    <h3>📰 News</h3>
-    <ul>
-        {% for article in result.news %}
-            <li><a href="{{ article.link }}">{{ article.title }}</a></li>
-        {% endfor %}
-    </ul>
+        <div class="result">
+            {% if result.error %}
+                <p class="error">{{ result.error }}</p>
+            {% else %}
+                {% if result.decision and result.reason %}
+                    <p><strong>Decision:</strong> {{ result.decision }}</p>
+                    <p><strong>Reason:</strong> {{ result.reason }}</p>
+                {% else %}
+                    <pre>{{ result | tojson(indent=2) }}</pre>
+                {% endif %}
+            {% endif %}
+        </div>
     {% endif %}
+</div>
 </body>
 </html>
