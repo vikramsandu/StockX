@@ -19,14 +19,6 @@ It’s like having a team of financial geniuses and a supercharged AI working ju
 
 ## 📦 Setup
 
-Step-1: Clone the repo
-Step-2: Get API's
-Step-3: Creats api_keys.json
-Step-4: Install requirements.txt
-
-## Run
-Run app using uvicorm app.main:app --reload
-
 ### 1. Get API Keys
 You will need:
 - **[Groq API Key](https://groq.com/)**
