@@ -32,5 +32,5 @@ Inside the `configs` folder, create a file named `api_keys.json`:
   "groq": "YOUR_GROQ_KEY",
   "news": "YOUR_NEWS_API_KEY"
 }
-'''
 
+### Dependencies
